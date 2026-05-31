@@ -1,0 +1,40 @@
+# ==========================================================================
+# Jeffrey Dan Ross - docker-compose.yml
+# Orchestrates container building and registers proxy routing with Traefik v2/v3.
+# ==========================================================================
+
+version: '3.8'
+
+services:
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jeffrey-dan-ross-website:latest
+    container_name: jeffrey-ross-web
+    restart: unless-stopped
+    # Mount local assets for easy development edits (optional, uncomment if needed)
+    # volumes:
+    #   - .:/usr/share/nginx/html
+    networks:
+      - traefik-public
+    labels:
+      # Enable Traefik proxy routing for this container service
+      - "traefik.enable=true"
+      
+      # Define routing rules for apex domain and www subdomain
+      - "traefik.http.routers.jeffreyross.rule=Host(`jeffreydanross.com`) || Host(`www.jeffreydanross.com`)"
+      - "traefik.http.routers.jeffreyross.entrypoints=websecure"
+      
+      # Configure Automatic SSL (HTTPS) via Let's Encrypt Resolver
+      - "traefik.http.routers.jeffreyross.tls=true"
+      # Note: 'letsencrypt' matches standard Traefik configuration setups.
+      # Overwrite with your specific Traefik cert resolver name if different.
+      - "traefik.http.routers.jeffreyross.tls.certresolver=letsencrypt"
+      
+      # Direct Traefik requests to the container's internal Nginx port 80
+      - "traefik.http.services.jeffreyross.loadbalancer.server.port=80"
+
+networks:
+  traefik-public:
+    external: true
