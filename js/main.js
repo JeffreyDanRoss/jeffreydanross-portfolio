@@ -143,22 +143,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!isValid) {
                 formStatus.textContent = errors.join(' ');
-                formStatus.classList.add('error');
+                formStatus.className = 'form-status error';
+                formStatus.style.display = 'block';
                 return;
             }
 
-            // Simulate form submission (Since it is a static website)
-            // Note: For real deployments, this form action can point to a backend or serverless handler like Formspree or Netlify Forms.
+            // Submit to Web3Forms API
             submitBtn.disabled = true;
             submitBtn.textContent = 'Sending Message...';
 
-            setTimeout(() => {
-                formStatus.textContent = 'Thank you for your message, Jeffrey. Your contact request was successfully processed.';
-                formStatus.classList.add('success');
-                contactForm.reset();
+            const formData = new FormData(contactForm);
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(async (response) => {
+                const resJson = await response.json();
+                if (response.status === 200) {
+                    formStatus.textContent = 'Thank you! Your message has been sent successfully.';
+                    formStatus.className = 'form-status success';
+                    formStatus.style.display = 'block';
+                    contactForm.reset();
+                } else {
+                    console.error(resJson);
+                    formStatus.textContent = resJson.message || 'Something went wrong. Please try again.';
+                    formStatus.className = 'form-status error';
+                    formStatus.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                formStatus.textContent = 'Network error. Please check your connection and try again.';
+                formStatus.className = 'form-status error';
+                formStatus.style.display = 'block';
+            })
+            .finally(() => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Send Message';
-            }, 1000);
+            });
         });
     }
 

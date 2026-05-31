@@ -100,7 +100,9 @@
                     <div class="contact-form-block" id="contact-form-column">
                         <div id="form-status" class="form-status" aria-live="polite"></div>
                         
-                        <form id="contact-form" novalidate>
+                        <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+                            <input type="hidden" name="access_key" value="ccaf53cd-6878-4d89-a320-45f22c1c454f">
+                            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
                             <!-- Name Input -->
                             <div class="form-group">
                                 <label for="name" class="form-label">Full Name</label>
