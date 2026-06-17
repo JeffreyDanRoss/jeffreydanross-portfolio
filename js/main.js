@@ -16,8 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check on load
+    if (header) {
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial check on load
+    }
 
     // 2. Mobile Navigation Toggle (Drawer menu)
     const menuToggle = document.querySelector('.menu-toggle');
