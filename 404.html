@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Error 404: Route Not Found. Page does not exist on the official website of Jeffrey Ross.">
+    <meta name="robots" content="noindex, follow">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jeffreydanross.com/404.html">
+    <meta property="og:title" content="Page Not Found | Jeffrey Ross">
+    <meta property="og:description" content="Error 404: Route Not Found. Cooper the Basset Hound has lost the trail.">
+    <meta property="og:image" content="/images/og-card.png">
+
+    <title>Page Not Found | Jeffrey Ross</title>
+    
+    <!-- Favicon Links (Absolute Paths) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- Global CSS Stylesheet (Absolute Path) -->
+    <link rel="stylesheet" href="/css/style.css?v=1.0.2">
+
+    <!-- Self-Contained Styles for 404 Visual Content -->
+    <style>
+        .error-section {
+            padding-top: calc(var(--header-height) + 2rem);
+            min-height: calc(100vh - var(--header-height) - 100px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .error-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            background-color: rgba(16, 21, 28, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 3rem 2rem;
+            max-width: 880px;
+            margin: 2rem auto;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.55), 
+                        0 0 25px rgba(6, 182, 212, 0.05);
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+
+        .error-container:hover {
+            border-color: rgba(6, 182, 212, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 
+                        0 0 35px rgba(6, 182, 212, 0.1);
+        }
+
+        /* Cooper Illustration Styling */
+        .error-visual {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .dog-glow-ring {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, rgba(6, 182, 212, 0) 70%);
+            animation: pulse-glow 5s infinite alternate ease-in-out;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(0.92); opacity: 0.5; }
+            100% { transform: scale(1.08); opacity: 1; }
+        }
+
+        .error-dog-image {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(6, 182, 212, 0.35);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.15);
+            z-index: 1;
+        }
+
+        /* Error Text & Headings */
+        .error-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .error-heading {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+
+        .error-code {
+            display: block;
+            font-size: 5.5rem;
+            font-weight: 800;
+            line-height: 0.95;
+            background: linear-gradient(135deg, #f1f5f9 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.05em;
+            filter: drop-shadow(0 2px 10px rgba(6, 182, 212, 0.25));
+        }
+
+        .error-title {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: var(--accent-cyan);
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.35);
+        }
+
+        .error-message {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-message strong {
+            color: var(--text-primary);
+        }
+
+        /* Collapsible Traceback terminal block */
+        .traceback-block {
+            margin-bottom: 2.25rem;
+            text-align: left;
+        }
+
+        .traceback-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            background-color: rgba(30, 38, 51, 0.25);
+            border: 1px solid rgba(30, 38, 51, 0.5);
+            transition: all var(--transition-fast);
+        }
+
+        .traceback-toggle:hover {
+            color: var(--accent-cyan);
+            border-color: rgba(6, 182, 212, 0.4);
+            background-color: rgba(6, 182, 212, 0.06);
+        }
+
+        .traceback-content {
+            margin-top: 0.75rem;
+        }
+
+        .traceback-content pre {
+            background-color: #06090c;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+            line-height: 1.45;
+        }
+
+        .traceback-content .traceback-header-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .traceback-content .traceback-error-type {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .traceback-content #current-path {
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.08);
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Action Buttons */
+        .error-actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-glow {
+            position: relative;
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);
+            transition: all var(--transition-normal);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+            transform: translateY(-2px);
+        }
+
+        /* Media Queries for Desktop Grid */
+        @media (min-width: 768px) {
+            .error-section {
+                padding-top: calc(var(--header-height) + 1rem);
+            }
+            .error-container {
+                grid-template-columns: 240px 1fr;
+                gap: 3.5rem;
+                text-align: left;
+                padding: 4rem;
+            }
+            .error-visual {
+                margin-bottom: 0;
+            }
+            .error-actions {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation (Absolute Paths for Custom Error Routing) -->
+    <header class="site-header">
+        <div class="container nav-container">
+            <a href="/" class="logo" id="header-logo-link">
+                <div class="logo-image-container">
+                    <img src="/images/logo.png" alt="Jeffrey Ross Logo" class="logo-image">
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">Jeffrey Ross</span>
+                    <span class="logo-title">Operations Leader & Systems Builder</span>
+                </div>
+            </a>
+            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav-menu" id="navigation-drawer">
+                <a href="/" class="nav-link" id="nav-home">Home</a>
+                <a href="/experience" class="nav-link" id="nav-experience">Experience</a>
+                <a href="/projects" class="nav-link" id="nav-projects">Projects</a>
+                <a href="/technology" class="nav-link" id="nav-technology">Technology</a>
+                <a href="/automation" class="nav-link" id="nav-automation">Automation</a>
+                <a href="/resume" class="nav-link" id="nav-resume">Resume</a>
+                <a href="/contact" class="nav-link" id="nav-contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        <section class="section error-section">
+            <div class="container">
+                <div class="error-container">
+                    
+                    <!-- Cooper illustration area -->
+                    <div class="error-visual">
+                        <div class="dog-glow-ring"></div>
+                        <img src="/images/cooper_lost_trail.webp" alt="Cooper the Basset Hound sniffing for the lost trail" class="error-dog-image">
+                    </div>
+                    
+                    <!-- Error Text Details -->
+                    <div class="error-details">
+                        <h1 class="error-heading">
+                            <span class="error-code">404</span>
+                            <span class="error-title">ROUTE_NOT_FOUND</span>
+                        </h1>
+                        
+                        <p class="error-message">
+                            It looks like you've wandered off the grid. Our operations assistant <strong>Cooper the Basset Hound</strong> has sniffed every corner of the registry, but he's lost the scent of the page you are looking for.
+                        </p>
+                        
+                        <!-- Collapsible Traceback terminal block -->
+                        <div class="traceback-block">
+                            <button class="traceback-toggle" id="traceback-toggle-btn" aria-expanded="false" aria-controls="traceback-content">
+                                <span class="toggle-icon">▶</span>
+                                <span class="toggle-text">Show System Traceback (Debug Info)</span>
+                            </button>
+                            <div class="traceback-content" id="traceback-content" style="max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease;">
+                                <pre><code class="language-python"><span class="traceback-header-comment"># Cooper Scent Tracker v1.0.4 - Diagnostic Trace</span>
+Traceback (most recent call last):
+  File "system/router.py", line 404, in resolve_route
+    raise RouteNotFoundError("Target URL could not be resolved.")
+<span class="traceback-error-type">RouteNotFoundError: HTTP 404 - The requested resource does not exist.</span>
+
+<span class="traceback-header-comment"># Scent search audit logs:</span>
+[INFO] Cooper started search at: 2026-06-17T19:13:04
+[WARN] Sniffing threshold exceeded. No matching directory entries found.
+[DEBUG] Active path: <span id="current-path">/unknown-route</span>
+[STATUS] Cooper returned status: LOST_TRAIL (0x0F4)</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <div class="error-actions">
+                            <a href="/" class="btn btn-primary btn-glow" id="cta-home">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; display: inline-block;">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    <polyline points="9 22 9 12 15 12 15 22"/>
+                                </svg>
+                                Retrieve the Scent (Go Home)
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section (Absolute Paths for Links) -->
+    <footer class="site-footer" id="site-footer">
+        <div class="container footer-content">
+            <div class="footer-copyright">
+                &copy; 2026 Jeffrey Ross. All rights reserved.
+            </div>
+            <div class="footer-notes">
+                Built with clean HTML & CSS. Hosted on Nginx & Traefik.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive JS Toggle and Path Injector -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inject the actual route pathname
+            const currentPathSpan = document.getElementById('current-path');
+            if (currentPathSpan) {
+                // If it is root /404.html directly, show a placeholder, otherwise show the current path
+                const path = window.location.pathname;
+                currentPathSpan.textContent = path === '/404.html' || path === '/404' ? '/missing-resource-request' : path;
+            }
+            
+            // Toggle system traceback logs
+            const toggleBtn = document.getElementById('traceback-toggle-btn');
+            const content = document.getElementById('traceback-content');
+            
+            if (toggleBtn && content) {
+                toggleBtn.addEventListener('click', () => {
+                    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+                    toggleBtn.setAttribute('aria-expanded', !isExpanded);
+                    
+                    if (isExpanded) {
+                        toggleBtn.querySelector('.toggle-icon').textContent = '▶';
+                        content.style.maxHeight = '0';
+                        content.style.opacity = '0';
+                    } else {
+                        toggleBtn.querySelector('.toggle-icon').textContent = '▼';
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        content.style.opacity = '1';
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Global Javascript (Absolute Path for Mobile Menu and Node Network Background Canvas) -->
+    <script src="/js/main.js?v=1.0.2"></script>
+</body>
+</html>

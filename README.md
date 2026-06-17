@@ -96,7 +96,7 @@ If you are running Nginx directly on the VPS host instead of inside Docker:
            try_files $uri $uri.html $uri/ =404;
        }
 
-       error_page 404 /index.html;
+       error_page 404 /404.html;
 
        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|pdf)$ {
            expires 30d;

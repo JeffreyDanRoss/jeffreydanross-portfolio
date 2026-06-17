@@ -46,6 +46,7 @@
                 <a href="experience" class="nav-link active" id="nav-experience">Experience</a>
                 <a href="projects" class="nav-link" id="nav-projects">Projects</a>
                 <a href="technology" class="nav-link" id="nav-technology">Technology</a>
+                <a href="automation" class="nav-link" id="nav-automation">Automation</a>
                 <a href="resume" class="nav-link" id="nav-resume">Resume</a>
                 <a href="contact" class="nav-link" id="nav-contact">Contact</a>
             </nav>
@@ -56,9 +57,16 @@
     <main>
         <section class="section" id="experience-section" style="padding-top: calc(var(--header-height) + 3rem);">
             <div class="container">
-                <h1 class="section-title" id="page-title">Professional Experience</h1>
+                <div class="section-header-row">
+                    <h1 class="section-title" id="page-title">Professional Experience</h1>
+                    <button class="python-toggle-btn" id="python-toggle" aria-label="Toggle Python Code View" aria-pressed="false">
+                        <span class="terminal-prompt">&gt;_</span>
+                        <span class="toggle-status">python_mode = False</span>
+                    </button>
+                </div>
                 
-                <div class="experience-layout">
+                <div class="experience-content-wrapper">
+                    <div class="experience-layout standard-view">
                     
                     <!-- SECTION 1: MILITARY LEADERSHIP -->
                     <div class="experience-block military" id="military-leadership-block">
@@ -278,11 +286,148 @@
                                 <h4>Process Standardization</h4>
                                 <p>Optimized process efficiency and eliminated communication latency by mapping workflow dependencies and deploying automated operational alerts.</p>
                             </div>
+                </div> <!-- Close .standard-view -->
+                
+                <!-- IDE-style Python Code View -->
+                <div class="code-editor-wrapper" id="python-code-view" style="display: none;">
+                    <!-- IDE Window Header -->
+                    <div class="ide-titlebar">
+                        <div class="ide-dots">
+                            <span class="ide-dot red"></span>
+                            <span class="ide-dot yellow"></span>
+                            <span class="ide-dot green"></span>
+                        </div>
+                        <div class="ide-title">jeffrey_ross.py</div>
+                        <div class="ide-actions">
+                            <button class="ide-action-btn copy-btn" id="code-copy-btn" title="Copy Code" aria-label="Copy Code">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span class="copy-tooltip">Copy</span>
+                            </button>
                         </div>
                     </div>
-
+                    <!-- IDE Tab bar -->
+                    <div class="ide-tabs-container">
+                        <div class="ide-tab active">
+                            <svg class="python-icon" viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="#3776AB" d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.18.33.1.37.06.4v2.4H14v-.27c0-.52-.15-.97-.47-1.33s-.79-.54-1.4-.54H9.6c-.66 0-1.19.18-1.6.54C7.6 3.4 7.4 3.9 7.4 4.5v1.8h6.8c.84 0 1.54.27 2.1.8s.84 1.22.84 2.05v3.6c0 .82-.28 1.5-.84 2.03s-1.26.8-2.1.8H9.36c-.84 0-1.54-.26-2.1-.8S6.4 13.57 6.4 12.75V9.9H2.8c-.85 0-1.54-.27-2.1-.8S.14 7.88.14 7.05v-3.6c0-.83.27-1.5.83-2.04S2.23.6 3.08.6H5.8V2.4c0 .54.16 1 .48 1.34s.8.5 1.44.5h2.52c.67 0 1.2-.17 1.6-.5.4-.35.6-.8.6-1.34V.4c0-.07.03-.13.1-.2s.13-.1.2-.1h1.9zm-8.37 2c-.2 0-.36.06-.48.2s-.18.3-.18.52c0 .2.06.37.18.5s.28.18.48.18c.22 0 .38-.06.5-.2s.18-.3.18-.5c0-.23-.06-.4-.18-.54s-.28-.2-.5-.2zM9.36 7.8c-.85 0-1.54.27-2.1.8s-.84 1.23-.84 2.05v3.6c0 .83.28 1.52.84 2.05s1.25.8 2.1.8H14c.54 0 .98-.16 1.3-.47s.48-.76.48-1.33v-1.8H9c-.83 0-1.53-.27-2.1-.8S6.3 11.4 6.3 10.57v-.27h3.6c.66 0 1.19-.18 1.6-.54.4-.36.6-.86.6-1.5V6H9.36v1.8zm3.24 9.9c-.22 0-.38.07-.5.2s-.18.32-.18.54c0 .22.06.38.18.5.28.18.5.18c.2 0 .36-.06.48-.18s.18-.3.18-.5c0-.22-.06-.38-.18-.5s-.28-.2-.48-.2z"/>
+                            </svg>
+                            <span>jeffrey_ross.py</span>
+                        </div>
+                    </div>
+                    <!-- IDE Breadcrumbs -->
+                    <div class="ide-breadcrumbs">
+                        <span>src</span> &gt; <span>portfolio</span> &gt; <span>experience</span> &gt; <span class="active">jeffrey_ross.py</span>
+                    </div>
+                    <!-- Editor Body -->
+                    <div class="ide-editor-main">
+                        <div class="ide-gutter" aria-hidden="true">
+                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span><span>32</span><span>33</span><span>34</span><span>35</span><span>36</span><span>37</span><span>38</span><span>39</span><span>40</span><span>41</span><span>42</span><span>43</span><span>44</span><span>45</span><span>46</span><span>47</span><span>48</span><span>49</span><span>50</span><span>51</span><span>52</span><span>53</span><span>54</span><span>55</span><span>56</span><span>57</span><span>58</span><span>59</span><span>60</span><span>61</span><span>62</span><span>63</span><span>64</span><span>65</span><span>66</span><span>67</span><span>68</span><span>69</span><span>70</span>
+                        </div>
+                        <div class="ide-code-viewport">
+                            <pre><code><span class="py-keyword">class</span> <span class="py-class">JeffreyRoss</span>:
+    <span class="py-keyword">def</span> <span class="py-builtin">__init__</span>(<span class="py-self">self</span>):
+        <span class="py-self">self</span>.name = <span class="py-string">"Jeffrey Ross"</span>
+        <span class="py-self">self</span>.title = <span class="py-string">"Operations Leader &amp; Systems Builder"</span>
+        
+        <span class="py-comment"># 1. Military Leadership - U.S. Army (Active Duty)</span>
+        <span class="py-self">self</span>.military_leadership = {
+            <span class="py-key">"organization"</span>: <span class="py-string">"United States Army"</span>,
+            <span class="py-key">"role"</span>: <span class="py-string">"Active Duty Service"</span>,
+            <span class="py-key">"aviation_operations"</span>: (
+                <span class="py-string">"Blackhawk Crew Chief &amp; repairer. Directed safety maintenance "</span>
+                <span class="py-string">"and coordinates for flight crews on complex turbine aircraft."</span>
+            ),
+            <span class="py-key">"flight_instructor"</span>: (
+                <span class="py-string">"Non-Rated Crew Member Flight Instructor. Accountable for flight "</span>
+                <span class="py-string">"safety curriculum, mentoring, and standard verification."</span>
+            ),
+            <span class="py-key">"training_and_sops"</span>: (
+                <span class="py-string">"Authored aviation SOPs; directed training programs to ensure "</span>
+                <span class="py-string">"regulatory compliance with military &amp; federal flight standards."</span>
+            ),
+            <span class="py-key">"deployments"</span>: [
+                <span class="py-string">"Two combat deployments to Iraq demonstrating adaptive leadership,"</span>
+                <span class="py-string">"high-stress resource management, and crew coordination."</span>
+            ]
+        }
+        
+        <span class="py-comment"># 2. Business Operations - Jason Ross Auto Sales (Executive Leadership)</span>
+        <span class="py-self">self</span>.business_operations = {
+            <span class="py-key">"organization"</span>: <span class="py-string">"Jason Ross Auto Sales"</span>,
+            <span class="py-key">"role"</span>: <span class="py-string">"Executive Leadership"</span>,
+            <span class="py-key">"dealership_growth"</span>: (
+                <span class="py-string">"General Manager. Engineered frameworks scaling inventory "</span>
+                <span class="py-string">"from 8 vehicles to a rolling fleet of 120+ vehicles."</span>
+            ),
+            <span class="py-key">"revenue_management"</span>: (
+                <span class="py-string">"Oversaw $1M+ monthly gross revenue, managing operational budgets "</span>
+                <span class="py-string">"and executing cost control scaling models."</span>
+            ),
+            <span class="py-key">"fi_compliance"</span>: (
+                <span class="py-string">"Directed Finance &amp; Insurance (F&amp;I) pipeline operations. "</span>
+                <span class="py-string">"Established risk compliance policies and audited structures."</span>
+            ),
+            <span class="py-key">"strategic_leadership"</span>: (
+                <span class="py-string">"Led cross-functional teams, optimized administrative workflows, "</span>
+                <span class="py-string">"and built performance metrics for scale."</span>
+            )
+        }
+        
+        <span class="py-comment"># 3. Automation &amp; Technology - Systems &amp; Operational Architect</span>
+        <span class="py-self">self</span>.automation_technology = {
+            <span class="py-key">"organization"</span>: <span class="py-string">"Systems &amp; Operational Architect"</span>,
+            <span class="py-key">"role"</span>: <span class="py-string">"Systems Builder"</span>,
+            <span class="py-key">"ai_responders"</span>: (
+                <span class="py-string">"Deployed intelligent AI sales lead response systems using "</span>
+                <span class="py-string">"custom rules/prompts for high-value routing."</span>
+            ),
+            <span class="py-key">"records_management"</span>: (
+                <span class="py-string">"Migrated legacy paper archives to secure digital records. "</span>
+                <span class="py-string">"Established structure, redundancy, and automated backups."</span>
+            ),
+            <span class="py-key">"workflow_automation"</span>: (
+                <span class="py-string">"Built API-driven process automation sequences linking CRM, "</span>
+                <span class="py-string">"inventory, vendor communications, and notifications."</span>
+            ),
+            <span class="py-key">"process_standardization"</span>: (
+                <span class="py-string">"Optimized efficiency by mapping workflow dependencies and "</span>
+                <span class="py-string">"deploying automated operational alerts."</span>
+            )
+        }</code></pre>
+                        </div>
+                    </div>
+                    <!-- IDE Statusbar -->
+                    <div class="ide-statusbar">
+                        <div class="status-left">
+                            <span class="status-item git-branch">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="6" y1="3" x2="6" y2="15"></line>
+                                    <circle cx="18" cy="6" r="3"></circle>
+                                    <circle cx="6" cy="18" r="3"></circle>
+                                    <path d="M18 9a9 9 0 0 1-9 9"></path>
+                                </svg>
+                                <span>main</span>
+                            </span>
+                            <span class="status-item status-sync">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                                </svg>
+                                <span>sync</span>
+                            </span>
+                        </div>
+                        <div class="status-right">
+                            <span class="status-item">Ln 1, Col 1</span>
+                            <span class="status-item">Spaces: 4</span>
+                            <span class="status-item">UTF-8</span>
+                            <span class="status-item">Python 3.10.8</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                
+                </div> <!-- Close .experience-content-wrapper -->
         </section>
     </main>
 

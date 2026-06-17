@@ -368,6 +368,245 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
     };
 
-    // Start the network animation
+    // 6. Interactive Python Resume Toggle
+    const pythonToggleBtn = document.getElementById('python-toggle');
+    const standardView = document.querySelector('.standard-view');
+    const pythonView = document.getElementById('python-code-view');
+    
+    if (pythonToggleBtn && standardView && pythonView) {
+        let toggleTimeout = null;
+
+        pythonToggleBtn.addEventListener('click', () => {
+            const isActive = pythonToggleBtn.classList.contains('active');
+            const statusText = pythonToggleBtn.querySelector('.toggle-status');
+            
+            // Clear any pending timeout from a previous click transition to prevent state corruption
+            if (toggleTimeout) {
+                clearTimeout(toggleTimeout);
+                toggleTimeout = null;
+            }
+            
+            if (!isActive) {
+                // Turn Python Mode ON
+                pythonToggleBtn.classList.add('active');
+                pythonToggleBtn.setAttribute('aria-pressed', 'true');
+                if (statusText) statusText.textContent = 'python_mode = True';
+                
+                // Transition: Fade standard view out
+                standardView.style.opacity = '0';
+                standardView.style.transform = 'translateY(-10px)';
+                
+                toggleTimeout = setTimeout(() => {
+                    standardView.style.display = 'none';
+                    pythonView.style.display = 'flex';
+                    
+                    // Replace forced synchronous reflow (offsetHeight) with high-performance requestAnimationFrame
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            pythonView.style.opacity = '1';
+                            pythonView.style.transform = 'translateY(0)';
+                        });
+                    });
+                }, 250);
+            } else {
+                // Turn Python Mode OFF
+                pythonToggleBtn.classList.remove('active');
+                pythonToggleBtn.setAttribute('aria-pressed', 'false');
+                if (statusText) statusText.textContent = 'python_mode = False';
+                
+                // Transition: Fade python view out
+                pythonView.style.opacity = '0';
+                pythonView.style.transform = 'translateY(10px)';
+                
+                toggleTimeout = setTimeout(() => {
+                    pythonView.style.display = 'none';
+                    standardView.style.display = 'grid';
+                    
+                    // Replace forced synchronous reflow (offsetHeight) with high-performance requestAnimationFrame
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            standardView.style.opacity = '1';
+                            standardView.style.transform = 'translateY(0)';
+                        });
+                    });
+                }, 250);
+            }
+        });
+        
+        // Copy Code to Clipboard functionality
+        const copyBtn = document.getElementById('code-copy-btn');
+        const codeBlock = pythonView.querySelector('pre code');
+        
+        if (copyBtn && codeBlock) {
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = codeBlock.textContent;
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        copyBtn.classList.add('copied');
+                        const tooltip = copyBtn.querySelector('.copy-tooltip');
+                        if (tooltip) tooltip.textContent = 'Copied!';
+                        
+                        setTimeout(() => {
+                            copyBtn.classList.remove('copied');
+                            if (tooltip) tooltip.textContent = 'Copy';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+            });
+        }
+    }
+
+    // 7. Hidden Keyboard Easter Egg (Helicopter Flyby)
+    // 7. Hidden Keyboard Easter Egg (Helicopter Flyby)
+    const initEasterEgg = () => {
+        // Prevent duplicate initialization
+        if (window.__heliEasterEggInitialized) return;
+        window.__heliEasterEggInitialized = true;
+
+        let typedBuffer = '';
+        const keywords = ['flyby', 'rotor', 'apache', 'copter'];
+        const maxKeywordLength = Math.max(...keywords.map(k => k.length));
+        let isHeliFlying = false;
+
+        const triggerEasterEgg = () => {
+            if (isHeliFlying) return;
+
+            // Respect prefers-reduced-motion preferences
+            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            isHeliFlying = true;
+
+            const container = document.createElement('div');
+            container.className = 'heli-container';
+            container.innerHTML = `
+                <svg class="easter-egg-heli" viewBox="0 0 200 80" width="200" height="80" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="cyan-glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <g filter="url(#cyan-glow)" stroke="#06b6d4" stroke-width="2" stroke-linejoin="miter" stroke-linecap="round" fill="none">
+                        <!-- Tail Rotor Group (Translated and animated) -->
+                        <g transform="translate(15, 30)">
+                            <g class="tail-rotor">
+                                <line x1="0" y1="-12" x2="0" y2="12" stroke-width="1.5" />
+                                <line x1="-12" y1="0" x2="12" y2="0" stroke-width="1.5" />
+                            </g>
+                        </g>
+                        <!-- Tail Fin / Rotor Hub -->
+                        <polygon points="10,25 22,18 22,42 12,42" fill="rgba(6, 182, 212, 0.1)" />
+                        
+                        <!-- Tail Boom (Stealth style angular structure) -->
+                        <polygon points="22,28 80,30 80,42 22,38" fill="rgba(6, 182, 212, 0.15)" />
+                        
+                        <!-- Main Rotor Shaft -->
+                        <line x1="110" y1="20" x2="110" y2="12" stroke-width="3" />
+                        <!-- Rotor Hub / Swashplate -->
+                        <line x1="102" y1="12" x2="118" y2="12" stroke-width="2" />
+                        
+                        <!-- Main Rotor Blades Group (Translated and animated) -->
+                        <g transform="translate(110, 12)">
+                            <g class="main-rotor">
+                                <line x1="-65" y1="0" x2="65" y2="0" stroke-width="1.5" />
+                                <path d="M -65,-2 L -65,2" />
+                                <path d="M 65,-2 L 65,2" />
+                            </g>
+                        </g>
+                        
+                        <!-- Main Fuselage (Stealth RAH-66 Comanche / Apache vibe) -->
+                        <polygon points="80,30 110,20 135,20 165,30 178,38 174,45 155,54 100,54 80,42" fill="rgba(6, 182, 212, 0.2)" />
+                        
+                        <!-- Cockpit Canopy Glass -->
+                        <polygon points="120,24 138,24 160,34 142,44 120,44" fill="rgba(6, 182, 212, 0.45)" stroke-width="1.5" />
+                        
+                        <!-- Weapon Pylons / Wings (Military look) -->
+                        <polygon points="95,44 120,44 125,49 92,49" fill="rgba(6, 182, 212, 0.3)" />
+                        <!-- Rocket pod or missile -->
+                        <rect x="98" y="49" width="22" height="5" rx="1.5" fill="none" stroke-width="1" />
+                        
+                        <!-- Landing Gear / Skids -->
+                        <line x1="105" y1="54" x2="100" y2="66" stroke-width="2" />
+                        <line x1="140" y1="54" x2="135" y2="66" stroke-width="2" />
+                        <path d="M 90,66 L 150,66 M 150,66 C 153,66 155,64 156,61" stroke-width="2.5" />
+                    </g>
+                </svg>
+            `;
+
+            document.body.appendChild(container);
+
+            // Fallback timeout to ensure cleanup even if the animation fails or does not complete (e.g. background tab)
+            const cleanupTimeout = setTimeout(() => {
+                cleanup();
+            }, 7000); // 6s animation + 1s buffer
+
+            const cleanup = () => {
+                clearTimeout(cleanupTimeout);
+                container.removeEventListener('animationend', handleAnimationEnd);
+                if (container.parentNode) {
+                    container.remove();
+                }
+                isHeliFlying = false;
+            };
+
+            const handleAnimationEnd = (e) => {
+                if (e.animationName === 'heli-flyby') {
+                    cleanup();
+                }
+            };
+
+            container.addEventListener('animationend', handleAnimationEnd);
+        };
+
+        window.addEventListener('keydown', (e) => {
+            // Ignore if modifier keys are pressed to avoid polluting the buffer or blocking standard hotkeys
+            if (e.ctrlKey || e.metaKey || e.altKey) {
+                return;
+            }
+
+            // Ignore keypresses if the user is typing in standard inputs or interactive form controls
+            const activeEl = document.activeElement;
+            if (activeEl) {
+                const tagName = activeEl.tagName.toUpperCase();
+                if (
+                    tagName === 'INPUT' || 
+                    tagName === 'TEXTAREA' || 
+                    tagName === 'SELECT' || 
+                    tagName === 'OPTION' ||
+                    activeEl.isContentEditable ||
+                    activeEl.getAttribute('role') === 'textbox' ||
+                    activeEl.getAttribute('role') === 'searchbox'
+                ) {
+                    return;
+                }
+            }
+
+            // Only capture single, alphabetical keys to avoid spaces, symbols, and function keys polluting the buffer
+            if (/^[a-zA-Z]$/.test(e.key)) {
+                typedBuffer += e.key.toLowerCase();
+                if (typedBuffer.length > maxKeywordLength) {
+                    typedBuffer = typedBuffer.slice(-maxKeywordLength);
+                }
+                
+                for (const keyword of keywords) {
+                    if (typedBuffer.endsWith(keyword)) {
+                        triggerEasterEgg();
+                        typedBuffer = '';
+                        break;
+                    }
+                }
+            }
+        });
+    };
+
+    // Start the animations
+    initEasterEgg();
     initNodeNetwork();
 });
+
