@@ -200,8 +200,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.prepend(canvas);
 
         const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let lastWidth = width;
+
+        // Scale canvas for high-DPI screens
+        const setCanvasSize = () => {
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+        };
+        setCanvasSize();
 
         const nodes = [];
         const maxDistance = 120; // Connection range between nodes
@@ -210,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const mouse = { x: null, y: null };
 
+        // Desktop Mouse Listeners
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
@@ -220,11 +232,28 @@ document.addEventListener('DOMContentLoaded', () => {
             mouse.y = null;
         });
 
+        // Mobile Touch Listeners
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        window.addEventListener('touchcancel', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
         class Node {
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                // Drifts slowly: velocity between -0.3 and 0.3
                 this.vx = (Math.random() - 0.5) * 0.6;
                 this.vy = (Math.random() - 0.5) * 0.6;
                 this.radius = Math.random() * 1.5 + 1; // 1px to 2.5px
@@ -234,9 +263,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Bounce off boundaries
+                // Bounce off boundaries (clamped dynamically to current width/height)
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                // Keep particles in bounds if dimensions shrink
+                if (this.x > width) this.x = width;
+                if (this.y > height) this.y = height;
             }
 
             draw() {
@@ -249,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const setupNodes = () => {
             nodes.length = 0;
-            // Adjust quantity based on screen area to keep performance stable
             const nodeDensity = 0.000045; // 45 nodes per million pixels
             const totalNodes = Math.min(90, Math.floor(width * height * nodeDensity));
             for (let i = 0; i < totalNodes; i++) {
@@ -258,12 +290,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const handleResize = () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            setupNodes();
+            const currentWidth = window.innerWidth;
+            const currentHeight = window.innerHeight;
+
+            width = currentWidth;
+            height = currentHeight;
+            setCanvasSize();
+
+            // Only regenerate particles if width changes (orientation shift / desktop resize)
+            // This prevents screen flashing on mobile due to scrolling address bar toggles
+            if (currentWidth !== lastWidth) {
+                lastWidth = currentWidth;
+                setupNodes();
+            }
         };
 
-        // Simple debounce to prevent performance hit on dragging window
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
@@ -293,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < maxDistance) {
-                        const alpha = (1 - dist / maxDistance) * 0.15; // Max opacity 0.15
+                        const alpha = (1 - dist / maxDistance) * 0.15;
                         ctx.beginPath();
                         ctx.moveTo(n1.x, n1.y);
                         ctx.lineTo(n2.x, n2.y);
@@ -303,14 +344,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Check connection to mouse
+                // Check connection to cursor/touch
                 if (mouse.x !== null && mouse.y !== null) {
                     const dx = n1.x - mouse.x;
                     const dy = n1.y - mouse.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < mouseDistance) {
-                        const alpha = (1 - dist / mouseDistance) * 0.25; // Max opacity 0.25
+                        const alpha = (1 - dist / mouseDistance) * 0.25;
                         ctx.beginPath();
                         ctx.moveTo(n1.x, n1.y);
                         ctx.lineTo(mouse.x, mouse.y);
