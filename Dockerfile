@@ -16,6 +16,7 @@ COPY technology.html /usr/share/nginx/html/
 COPY resume.html /usr/share/nginx/html/
 COPY contact.html /usr/share/nginx/html/
 COPY resume.pdf /usr/share/nginx/html/
+COPY favicon.ico favicon-16x16.png favicon-32x32.png apple-touch-icon.png /usr/share/nginx/html/
 
 # Copy CSS and JS directories
 COPY css/ /usr/share/nginx/html/css/
