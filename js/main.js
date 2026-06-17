@@ -396,11 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "description": "Served as US Army Crew Chief and Flight Instructor directing flight safety and training programs"
     },
     "dealership_leadership": {
-        "priority_one": {
-            "company": "Priority One Auto Sales",
-            "role": "Leadership",
-            "description": "Directed team operations and business scaling strategies"
-        },
         "jason_ross": {
             "company": "Jason Ross Auto Sales",
             "role": "General Manager",
@@ -595,6 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (standardView) {
                     standardView.classList.add('hidden');
                 }
+                pythonView.style.display = 'flex';
                 pythonView.classList.remove('hidden');
                 
                 requestAnimationFrame(() => {
@@ -611,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pythonView.style.opacity = '0';
                 pythonView.style.transform = 'translateY(15px)';
                 pythonView.classList.add('hidden');
+                pythonView.style.display = 'none';
                 
                 if (standardView) {
                     standardView.classList.remove('hidden');
