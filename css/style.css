@@ -573,7 +573,7 @@ input, textarea, button {
 
 /* IDE Frame Styling */
 .code-editor-wrapper {
-    background-color: #080b0f;
+    background-color: #0a0d10;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
@@ -848,11 +848,16 @@ input, textarea, button {
 }
 
 .py-key {
-    color: #9cdcfe; /* vscode dict key sky-blue */
+    color: var(--accent-cyan); /* vscode string cyan (#06b6d4) */
 }
 
 .py-string {
     color: var(--accent-cyan); /* vscode string cyan (#06b6d4) */
+}
+
+.py-punct,
+.py-bracket {
+    color: #5f7080; /* Appropriate muted color for punctuation and brackets */
 }
 
 .py-comment {

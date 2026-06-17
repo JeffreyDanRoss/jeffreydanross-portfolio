@@ -375,6 +375,120 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (pythonToggleBtn && standardView && pythonView) {
         let toggleTimeout = null;
+        const codeBlock = pythonView.querySelector('pre code');
+        const gutter = pythonView.querySelector('.ide-gutter');
+
+        // Python dictionary representing Jeffrey's experience
+        const pythonDict = `professional_experience = {
+    "military_service": {
+        "organization": "US Army",
+        "roles": "Crew Chief and Flight Instructor",
+        "description": "Served as Crew Chief and Flight Instructor directing flight safety and training programs"
+    },
+    "dealership_leadership": {
+        "priority_one": {
+            "company": "Priority One Auto Sales",
+            "role": "Leadership",
+            "description": "Directed team operations and business scaling strategies"
+        },
+        "jason_ross": {
+            "company": "Jason Ross Auto Sales",
+            "role": "General Manager",
+            "description": "Managed dealership growth and scaled active inventory and monthly revenue"
+        }
+    },
+    "technical_projects": {
+        "programming": "Custom application development and scripting solutions",
+        "automation": "n8n workflow automation to integrate back office pipelines",
+        "ai_responders": "Custom AI lead responders for automated customer engagement"
+    }
+}`;
+
+        // Custom syntax highlighting engine for Python dictionary format
+        function highlightPython(text) {
+            const rules = [
+                { type: 'comment', regex: /^#[^\n]*/ },
+                { type: 'key', regex: /^"(?:[^"\\]|\\.)*"(?=\s*:)/ },
+                { type: 'string', regex: /^"(?:[^"\\]|\\.)*"/ },
+                { type: 'number', regex: /^\b\d+(?:\.\d+)?\b/ },
+                { type: 'keyword', regex: /^(?:def|class|self|import|from|return|if|elif|else)\b/ },
+                { type: 'bracket', regex: /^[{}[\]()]/ },
+                { type: 'punct', regex: /^[:=,]/ },
+                { type: 'whitespace', regex: /^\s+/ },
+                { type: 'identifier', regex: /^[a-zA-Z_][a-zA-Z0-9_]*/ },
+                { type: 'other', regex: /^./ }
+            ];
+
+            let html = '';
+            let i = 0;
+            while (i < text.length) {
+                const sub = text.slice(i);
+                let matched = false;
+                for (const rule of rules) {
+                    const match = sub.match(rule.regex);
+                    if (match) {
+                        const val = match[0];
+                        i += val.length;
+                        matched = true;
+                        
+                        const escapedVal = val
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+
+                        if (rule.type === 'comment') {
+                            html += `<span class="py-comment">${escapedVal}</span>`;
+                        } else if (rule.type === 'key') {
+                            html += `<span class="py-key">${escapedVal}</span>`;
+                        } else if (rule.type === 'string') {
+                            html += `<span class="py-string">${escapedVal}</span>`;
+                        } else if (rule.type === 'number') {
+                            html += `<span class="py-number">${escapedVal}</span>`;
+                        } else if (rule.type === 'keyword') {
+                            html += `<span class="py-keyword">${escapedVal}</span>`;
+                        } else if (rule.type === 'bracket') {
+                            html += `<span class="py-bracket">${escapedVal}</span>`;
+                        } else if (rule.type === 'punct') {
+                            html += `<span class="py-punct">${escapedVal}</span>`;
+                        } else if (rule.type === 'whitespace') {
+                            html += escapedVal;
+                        } else if (rule.type === 'identifier') {
+                            if (escapedVal === 'self') {
+                                html += `<span class="py-self">self</span>`;
+                            } else {
+                                html += escapedVal;
+                            }
+                        } else {
+                            html += escapedVal;
+                        }
+                        break;
+                    }
+                }
+                if (!matched) {
+                    html += text[i];
+                    i++;
+                }
+            }
+            return html;
+        }
+
+        // Initialize and render the syntax-highlighted code block and gutter numbers
+        const initCodeView = () => {
+            if (codeBlock) {
+                codeBlock.innerHTML = highlightPython(pythonDict);
+                if (gutter) {
+                    const lineCount = pythonDict.split('\n').length;
+                    let gutterHTML = '';
+                    for (let idx = 1; idx <= lineCount; idx++) {
+                        gutterHTML += `<span>${idx}</span>`;
+                    }
+                    gutter.innerHTML = gutterHTML;
+                }
+            }
+        };
+
+        // Render code view immediately on load
+        initCodeView();
 
         pythonToggleBtn.addEventListener('click', () => {
             const isActive = pythonToggleBtn.classList.contains('active');
@@ -435,7 +549,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Copy Code to Clipboard functionality
         const copyBtn = document.getElementById('code-copy-btn');
-        const codeBlock = pythonView.querySelector('pre code');
         
         if (copyBtn && codeBlock) {
             copyBtn.addEventListener('click', () => {
