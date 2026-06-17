@@ -2145,30 +2145,30 @@ textarea.form-input {
 
 /* Node Inspector Panel (Drawer) */
 .node-inspector {
-    width: 0;
-    flex-shrink: 0;
-    margin-left: 0;
-    background: rgba(16, 21, 28, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid transparent;
+    position: fixed;
+    top: calc(var(--header-height) + 1.5rem);
+    right: 1.5rem;
+    height: calc(100vh - var(--header-height) - 3rem);
+    width: calc(100vw - 3rem);
+    max-width: 420px;
+    z-index: 1000;
+    background: rgba(10, 13, 16, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     display: flex;
     flex-direction: column;
-    height: 600px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.45);
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(calc(100% + 2.5rem));
     pointer-events: none;
     visibility: hidden;
-    transition: transform var(--transition-slow), opacity var(--transition-slow), width var(--transition-slow), margin-left var(--transition-slow), border-color var(--transition-slow), visibility var(--transition-slow);
+    transition: transform var(--transition-slow), opacity var(--transition-slow), visibility var(--transition-slow);
     overflow: hidden;
 }
 
 .node-inspector.open {
-    width: 390px;
-    margin-left: 2rem;
-    border-color: var(--border-color);
     opacity: 1;
     transform: translateX(0);
     pointer-events: auto;
@@ -2374,8 +2374,12 @@ textarea.form-input {
     }
     
     .node-inspector {
+        position: relative;
+        top: auto;
+        right: auto;
+        bottom: auto;
         width: 100%;
-        margin-left: 0;
+        max-width: none;
         height: auto;
         max-height: 0;
         transform: translateY(20px);
@@ -2388,7 +2392,6 @@ textarea.form-input {
     
     .node-inspector.open {
         width: 100%;
-        margin-left: 0;
         opacity: 1;
         transform: translateY(0);
         visibility: visible;
@@ -2423,6 +2426,7 @@ textarea.form-input {
     
     .node-inspector {
         position: fixed;
+        top: auto;
         bottom: 0;
         left: 0;
         right: 0;

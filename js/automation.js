@@ -295,22 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
         svgOverlay.innerHTML = pathsHtml;
     };
 
-    // Helper to redraw connections smoothly during transitions (runs requestAnimationFrame for 400ms)
-    const animateConnections = () => {
-        const startTime = performance.now();
-        const duration = 400; // Matches --transition-slow (0.4s) in CSS
-        
-        const step = (now) => {
-            drawConnections();
-            if (now - startTime < duration) {
-                requestAnimationFrame(step);
-            } else {
-                drawConnections();
-            }
-        };
-        requestAnimationFrame(step);
-    };
-
     // 5. Select & populate inspector card
     const selectNode = (nodeId) => {
         const data = nodeDetails[nodeId];
@@ -391,8 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
         inspector.classList.add('open');
         inspector.setAttribute('aria-hidden', 'false');
 
-        // Animate connections to fit new compressed layout width
-        animateConnections();
+        // Redraw connections to show highlights
+        drawConnections();
     };
 
     // 6. Close Inspector Handler
@@ -406,8 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
             node.setAttribute('aria-expanded', 'false');
         });
         
-        // Animate connections as the canvas transitions back to full width
-        animateConnections();
+        // Redraw connections to remove highlights
+        drawConnections();
     };
 
     if (closeInspectorBtn) {
