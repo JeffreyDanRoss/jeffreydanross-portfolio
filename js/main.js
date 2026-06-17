@@ -190,4 +190,141 @@ document.addEventListener('DOMContentLoaded', () => {
         const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return re.test(String(email).toLowerCase());
     }
+
+    // 5. Lightweight Canvas Node Network Background Animation
+    const initNodeNetwork = () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'node-network-canvas';
+        document.body.prepend(canvas);
+
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const nodes = [];
+        const maxDistance = 120; // Connection range between nodes
+        const mouseDistance = 165; // Connection range to cursor
+        const cyanColor = '6, 182, 212'; // rgb corresponding to #06b6d4
+
+        const mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        class Node {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                // Drifts slowly: velocity between -0.3 and 0.3
+                this.vx = (Math.random() - 0.5) * 0.6;
+                this.vy = (Math.random() - 0.5) * 0.6;
+                this.radius = Math.random() * 1.5 + 1; // 1px to 2.5px
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off boundaries
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${cyanColor}, 0.45)`;
+                ctx.fill();
+            }
+        }
+
+        const setupNodes = () => {
+            nodes.length = 0;
+            // Adjust quantity based on screen area to keep performance stable
+            const nodeDensity = 0.000045; // 45 nodes per million pixels
+            const totalNodes = Math.min(90, Math.floor(width * height * nodeDensity));
+            for (let i = 0; i < totalNodes; i++) {
+                nodes.push(new Node());
+            }
+        };
+
+        const handleResize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            setupNodes();
+        };
+
+        // Simple debounce to prevent performance hit on dragging window
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(handleResize, 150);
+        });
+
+        setupNodes();
+
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+
+            // Update and draw nodes
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+
+            // Draw connections
+            for (let i = 0; i < nodes.length; i++) {
+                const n1 = nodes[i];
+                
+                // Check connection to other nodes
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const n2 = nodes[j];
+                    const dx = n1.x - n2.x;
+                    const dy = n1.y - n2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < maxDistance) {
+                        const alpha = (1 - dist / maxDistance) * 0.15; // Max opacity 0.15
+                        ctx.beginPath();
+                        ctx.moveTo(n1.x, n1.y);
+                        ctx.lineTo(n2.x, n2.y);
+                        ctx.strokeStyle = `rgba(${cyanColor}, ${alpha})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+
+                // Check connection to mouse
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = n1.x - mouse.x;
+                    const dy = n1.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < mouseDistance) {
+                        const alpha = (1 - dist / mouseDistance) * 0.25; // Max opacity 0.25
+                        ctx.beginPath();
+                        ctx.moveTo(n1.x, n1.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(${cyanColor}, ${alpha})`;
+                        ctx.lineWidth = 1.0;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
+    };
+
+    // Start the network animation
+    initNodeNetwork();
 });

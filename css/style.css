@@ -1392,3 +1392,18 @@ textarea.form-input {
 .dev-console-window:hover .console-screenshot {
     opacity: 1;
 }
+
+/* ==========================================================================
+   Interactive Background Canvas
+   ========================================================================== */
+#node-network-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background: transparent;
+    display: block;
+}
