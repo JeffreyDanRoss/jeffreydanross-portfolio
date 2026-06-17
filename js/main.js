@@ -580,12 +580,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // State Toggling
             const isActive = pythonToggleBtn.classList.contains('active');
-            const statusText = pythonToggleBtn.querySelector('.toggle-status');
             
             if (!isActive) {
                 pythonToggleBtn.classList.add('active');
                 pythonToggleBtn.setAttribute('aria-pressed', 'true');
-                if (statusText) statusText.textContent = 'python_mode = True';
+                pythonToggleBtn.innerHTML = '<span class="terminal-prompt">&gt;_</span> <span class="toggle-status">python_mode = True</span>';
                 
                 if (standardView) {
                     standardView.classList.add('hidden');
@@ -602,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 pythonToggleBtn.classList.remove('active');
                 pythonToggleBtn.setAttribute('aria-pressed', 'false');
-                if (statusText) statusText.textContent = 'python_mode = False';
+                pythonToggleBtn.innerHTML = '<span class="terminal-prompt">&gt;_</span> <span class="toggle-status">python_mode = False</span>';
                 
                 pythonView.style.opacity = '0';
                 pythonView.style.transform = 'translateY(15px)';
