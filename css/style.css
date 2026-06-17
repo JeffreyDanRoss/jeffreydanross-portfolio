@@ -1870,7 +1870,6 @@ textarea.form-input {
 /* Flex layout with diagram on left, inspector on right */
 .workflow-workspace {
     display: flex;
-    gap: 2rem;
     position: relative;
     width: 100%;
     align-items: stretch;
@@ -2141,12 +2140,13 @@ textarea.form-input {
 
 /* Node Inspector Panel (Drawer) */
 .node-inspector {
-    width: 390px;
+    width: 0;
     flex-shrink: 0;
+    margin-left: 0;
     background: rgba(16, 21, 28, 0.65);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-color);
+    border: 1px solid transparent;
     border-radius: var(--border-radius-lg);
     display: flex;
     flex-direction: column;
@@ -2156,11 +2156,14 @@ textarea.form-input {
     transform: translateX(30px);
     pointer-events: none;
     visibility: hidden;
-    transition: transform var(--transition-slow), opacity var(--transition-slow), width var(--transition-slow), visibility var(--transition-slow);
+    transition: transform var(--transition-slow), opacity var(--transition-slow), width var(--transition-slow), margin-left var(--transition-slow), border-color var(--transition-slow), visibility var(--transition-slow);
     overflow: hidden;
 }
 
 .node-inspector.open {
+    width: 390px;
+    margin-left: 2rem;
+    border-color: var(--border-color);
     opacity: 1;
     transform: translateX(0);
     pointer-events: auto;
@@ -2223,6 +2226,25 @@ textarea.form-input {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+}
+
+/* Custom Scrollbar for Inspector Body */
+.inspector-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.inspector-body::-webkit-scrollbar-track {
+    background: rgba(10, 13, 16, 0.8);
+    border-radius: 0 0 var(--border-radius-lg) 0;
+}
+
+.inspector-body::-webkit-scrollbar-thumb {
+    background: #06b6d4;
+    border-radius: 4px;
+}
+
+.inspector-body::-webkit-scrollbar-thumb:hover {
+    background: #08e2ff;
 }
 
 .inspector-section-title {
@@ -2343,23 +2365,30 @@ textarea.form-input {
 @media (max-width: 1024px) {
     .workflow-workspace {
         flex-direction: column;
+        gap: 2rem;
     }
     
     .node-inspector {
         width: 100%;
+        margin-left: 0;
         height: auto;
-        max-height: 600px;
+        max-height: 0;
         transform: translateY(20px);
         opacity: 0;
         display: flex;
         visibility: hidden;
-        transition: transform var(--transition-slow), opacity var(--transition-slow), visibility var(--transition-slow);
+        border-color: transparent;
+        transition: transform var(--transition-slow), opacity var(--transition-slow), max-height var(--transition-slow), border-color var(--transition-slow), visibility var(--transition-slow);
     }
     
     .node-inspector.open {
+        width: 100%;
+        margin-left: 0;
         opacity: 1;
         transform: translateY(0);
         visibility: visible;
+        max-height: 600px;
+        border-color: var(--border-color);
     }
 }
 
@@ -2394,6 +2423,7 @@ textarea.form-input {
         right: 0;
         width: 100% !important;
         height: 65vh;
+        max-height: none !important;
         z-index: 2000;
         border-radius: 20px 20px 0 0;
         transform: translateY(100%);
