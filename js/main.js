@@ -369,21 +369,31 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 6. Interactive Python Resume Toggle
-    const pythonToggleBtn = document.getElementById('python-toggle');
-    const standardView = document.querySelector('.standard-view');
-    const pythonView = document.getElementById('python-code-view');
+    let pythonToggleBtn = document.getElementById('python-toggle') || 
+                          document.querySelector('.python-toggle-btn');
     
-    if (pythonToggleBtn && standardView && pythonView) {
-        let toggleTimeout = null;
-        const codeBlock = pythonView.querySelector('pre code');
-        const gutter = pythonView.querySelector('.ide-gutter');
+    if (!pythonToggleBtn) {
+        // Fallback: search by text content
+        const buttons = document.querySelectorAll('button');
+        for (const btn of buttons) {
+            if (btn.textContent.includes('python_mode')) {
+                pythonToggleBtn = btn;
+                pythonToggleBtn.id = 'python-toggle';
+                break;
+            }
+        }
+    }
+
+    if (pythonToggleBtn) {
+        const standardView = document.querySelector('.standard-view');
 
         // Python dictionary representing Jeffrey's experience
         const pythonDict = `professional_experience = {
+    "name": "Jeffrey Ross",
     "military_service": {
         "organization": "US Army",
         "roles": "Crew Chief and Flight Instructor",
-        "description": "Served as Crew Chief and Flight Instructor directing flight safety and training programs"
+        "description": "Served as US Army Crew Chief and Flight Instructor directing flight safety and training programs"
     },
     "dealership_leadership": {
         "priority_one": {
@@ -473,7 +483,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Initialize and render the syntax-highlighted code block and gutter numbers
-        const initCodeView = () => {
+        const initCodeView = (container) => {
+            const codeBlock = container.querySelector('pre code');
+            const gutter = container.querySelector('.ide-gutter');
             if (codeBlock) {
                 codeBlock.innerHTML = highlightPython(pythonDict);
                 if (gutter) {
@@ -487,87 +499,148 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Render code view immediately on load
-        initCodeView();
+        // Render code view immediately on load if it exists in the DOM
+        let existingView = document.getElementById('python-code-view');
+        if (existingView) {
+            initCodeView(existingView);
+        }
 
         pythonToggleBtn.addEventListener('click', () => {
+            let pythonView = document.getElementById('python-code-view');
+            const isCreatedNow = !pythonView;
+            
+            // Dynamic Container Handling
+            if (isCreatedNow) {
+                pythonView = document.createElement('div');
+                pythonView.id = 'python-code-view';
+                pythonView.className = 'code-editor-wrapper hidden';
+                pythonView.innerHTML = `
+                    <div class="ide-titlebar">
+                        <div class="ide-dots">
+                            <span class="ide-dot red"></span>
+                            <span class="ide-dot yellow"></span>
+                            <span class="ide-dot green"></span>
+                        </div>
+                        <div class="ide-title">jeffrey_ross.py</div>
+                        <div class="ide-actions">
+                            <button class="ide-action-btn copy-btn" id="code-copy-btn" title="Copy Code" aria-label="Copy Code">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span class="copy-tooltip">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ide-tabs-container">
+                        <div class="ide-tab active">
+                            <span>jeffrey_ross.py</span>
+                        </div>
+                    </div>
+                    <div class="ide-breadcrumbs">
+                        <span>src</span> &gt; <span>portfolio</span> &gt; <span>experience</span> &gt; <span class="active">jeffrey_ross.py</span>
+                    </div>
+                    <div class="ide-editor-main">
+                        <div class="ide-gutter" aria-hidden="true"></div>
+                        <div class="ide-code-viewport">
+                            <pre><code></code></pre>
+                        </div>
+                    </div>
+                `;
+                
+                const header = document.querySelector('.site-header') || document.querySelector('header');
+                if (header) {
+                    header.parentNode.insertBefore(pythonView, header.nextSibling);
+                } else {
+                    document.body.prepend(pythonView);
+                }
+            }
+
+            // Populate and bind copy button if empty/just created
+            const codeBlock = pythonView.querySelector('pre code');
+            if (codeBlock && !codeBlock.innerHTML) {
+                initCodeView(pythonView);
+                
+                const copyBtn = pythonView.querySelector('#code-copy-btn');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', () => {
+                        const textToCopy = codeBlock.textContent;
+                        navigator.clipboard.writeText(textToCopy)
+                            .then(() => {
+                                copyBtn.classList.add('copied');
+                                const tooltip = copyBtn.querySelector('.copy-tooltip');
+                                if (tooltip) tooltip.textContent = 'Copied!';
+                                
+                                setTimeout(() => {
+                                    copyBtn.classList.remove('copied');
+                                    if (tooltip) tooltip.textContent = 'Copy';
+                                }, 2000);
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy text: ', err);
+                            });
+                    });
+                }
+            }
+
+            // State Toggling
             const isActive = pythonToggleBtn.classList.contains('active');
             const statusText = pythonToggleBtn.querySelector('.toggle-status');
             
-            // Clear any pending timeout from a previous click transition to prevent state corruption
-            if (toggleTimeout) {
-                clearTimeout(toggleTimeout);
-                toggleTimeout = null;
-            }
-            
             if (!isActive) {
-                // Turn Python Mode ON
                 pythonToggleBtn.classList.add('active');
                 pythonToggleBtn.setAttribute('aria-pressed', 'true');
                 if (statusText) statusText.textContent = 'python_mode = True';
                 
-                // Transition: Fade standard view out
-                standardView.style.opacity = '0';
-                standardView.style.transform = 'translateY(-10px)';
+                if (standardView) {
+                    standardView.classList.add('hidden');
+                }
+                pythonView.classList.remove('hidden');
                 
-                toggleTimeout = setTimeout(() => {
-                    standardView.style.display = 'none';
-                    pythonView.style.display = 'flex';
-                    
-                    // Replace forced synchronous reflow (offsetHeight) with high-performance requestAnimationFrame
+                requestAnimationFrame(() => {
                     requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            pythonView.style.opacity = '1';
-                            pythonView.style.transform = 'translateY(0)';
-                        });
+                        pythonView.style.opacity = '1';
+                        pythonView.style.transform = 'translateY(0)';
                     });
-                }, 250);
+                });
             } else {
-                // Turn Python Mode OFF
                 pythonToggleBtn.classList.remove('active');
                 pythonToggleBtn.setAttribute('aria-pressed', 'false');
                 if (statusText) statusText.textContent = 'python_mode = False';
                 
-                // Transition: Fade python view out
                 pythonView.style.opacity = '0';
-                pythonView.style.transform = 'translateY(10px)';
+                pythonView.style.transform = 'translateY(15px)';
+                pythonView.classList.add('hidden');
                 
-                toggleTimeout = setTimeout(() => {
-                    pythonView.style.display = 'none';
-                    standardView.style.display = 'grid';
-                    
-                    // Replace forced synchronous reflow (offsetHeight) with high-performance requestAnimationFrame
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            standardView.style.opacity = '1';
-                            standardView.style.transform = 'translateY(0)';
-                        });
-                    });
-                }, 250);
+                if (standardView) {
+                    standardView.classList.remove('hidden');
+                }
             }
         });
-        
-        // Copy Code to Clipboard functionality
-        const copyBtn = document.getElementById('code-copy-btn');
-        
-        if (copyBtn && codeBlock) {
-            copyBtn.addEventListener('click', () => {
-                const textToCopy = codeBlock.textContent;
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        copyBtn.classList.add('copied');
-                        const tooltip = copyBtn.querySelector('.copy-tooltip');
-                        if (tooltip) tooltip.textContent = 'Copied!';
-                        
-                        setTimeout(() => {
-                            copyBtn.classList.remove('copied');
-                            if (tooltip) tooltip.textContent = 'Copy';
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-            });
+
+        // Set up Copy Code event listener if container exists on load
+        if (existingView) {
+            const copyBtn = existingView.querySelector('#code-copy-btn');
+            const codeBlock = existingView.querySelector('pre code');
+            if (copyBtn && codeBlock) {
+                copyBtn.addEventListener('click', () => {
+                    const textToCopy = codeBlock.textContent;
+                    navigator.clipboard.writeText(textToCopy)
+                        .then(() => {
+                            copyBtn.classList.add('copied');
+                            const tooltip = copyBtn.querySelector('.copy-tooltip');
+                            if (tooltip) tooltip.textContent = 'Copied!';
+                            
+                            setTimeout(() => {
+                                copyBtn.classList.remove('copied');
+                                if (tooltip) tooltip.textContent = 'Copy';
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy text: ', err);
+                        });
+                });
+            }
         }
     }
 

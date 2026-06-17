@@ -869,6 +869,11 @@ input, textarea, button {
     color: #b5cea8; /* green-yellow numbers */
 }
 
+/* Helper utility for state toggling */
+.hidden {
+    display: none !important;
+}
+
 /* --- Responsive Adaptations for IDE View --- */
 @media (max-width: 768px) {
     .section-header-row {
