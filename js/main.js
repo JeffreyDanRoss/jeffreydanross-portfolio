@@ -392,20 +392,20 @@ document.addEventListener('DOMContentLoaded', () => {
     "name": "Jeffrey Ross",
     "military_service": {
         "organization": "US Army",
-        "roles": "Crew Chief and Flight Instructor",
+        "roles": "US Army Crew Chief, Flight Instructor",
         "description": "Served as US Army Crew Chief and Flight Instructor directing flight safety and training programs"
     },
-    "dealership_leadership": {
+    "corporate_leadership": {
         "jason_ross": {
             "company": "Jason Ross Auto Sales",
-            "role": "General Manager",
+            "role": "former General Manager at Jason Ross Auto Sales",
             "description": "Managed dealership growth and scaled active inventory and monthly revenue"
         }
     },
     "technical_projects": {
-        "programming": "Custom application development and scripting solutions",
-        "automation": "n8n workflow automation to integrate back office pipelines",
-        "ai_responders": "Custom AI lead responders for automated customer engagement"
+        "programming": "programming",
+        "n8n_workflow_automation": "n8n workflow automation",
+        "custom_ai_lead_responders": "custom AI lead responders"
     }
 }`;
 
@@ -543,11 +543,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 
-                const header = document.querySelector('.site-header') || document.querySelector('header');
-                if (header) {
-                    header.parentNode.insertBefore(pythonView, header.nextSibling);
+                const standardView = document.querySelector('.standard-view');
+                if (standardView) {
+                    standardView.insertAdjacentElement('afterend', pythonView);
                 } else {
-                    document.body.prepend(pythonView);
+                    const wrapper = document.querySelector('.experience-content-wrapper');
+                    if (wrapper) {
+                        wrapper.appendChild(pythonView);
+                    } else {
+                        document.body.appendChild(pythonView);
+                    }
                 }
             }
 
