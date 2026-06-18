@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     raw_data: {
                         name: 'Marcus Vance',
                         email: 'm.vance@vancetech.com',
-                        phone: '+1 (555) 902-3142',
+                        phone: '+1 (555) 902 3142',
                         message: 'Looking to build an enterprise RAG system to parse our internal PDFs. Budget is $15k.',
                         submitted_at: '2026-06-17T19:06:07Z'
                     }
@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Decision Router',
             status: 'Active (Routing)',
             badgeClass: 'badge-router',
-            description: 'Parses lead fields and routes requests based on pre-defined criteria. It evaluates email domains (e.g., corporate vs public), checks query keywords, and segments leads into appropriate pipelines.',
-            impact: 'Eliminates administrative sorting. Corporate domains or budget-oriented inquiries are routed to AI enrichment; standard info requests or direct sales sync straight to CRM.',
+            description: 'Parses lead fields and routes requests based on predefined criteria. It evaluates email domains (e.g., corporate vs public), checks query keywords, and segments leads into appropriate pipelines.',
+            impact: 'Eliminates administrative sorting. Corporate domains or budget oriented inquiries are routed to AI enrichment; standard info requests or direct sales sync straight to CRM.',
             inputs: {
                 source: 'Lead Ingestion Trigger',
                 parameters: ['domain_type', 'message_content', 'budget_estimate']
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     enriched_data: {
                         company_name: 'Vance Technologies Inc.',
                         industry: 'Cloud Infrastructure & Enterprise Security',
-                        company_size: '50-200 employees',
+                        company_size: '50 to 200 employees',
                         tech_stack: ['AWS', 'Kubernetes', 'Python', 'PostgreSQL'],
                         estimated_revenue: '$8.5M'
                     }
@@ -89,10 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
             status: 'Active (Idle)',
             badgeClass: 'badge-ai',
             description: 'Leverages small, fast LLMs to classify the message\'s intent, urgency level, and sentiment score. It drafts an initial personalized response matching Jeffrey\'s professional tone.',
-            impact: 'Ensures immediate qualification. Scores urgency so high-priority corporate contracts trigger real-time operational SMS/Slack alerts for immediate human-in-the-loop engagement.',
+            impact: 'Ensures immediate qualification. Scores urgency so high priority corporate contracts trigger real time operational SMS/Slack alerts for immediate human in the loop engagement.',
             inputs: {
                 source: 'VeteranLM Context Enricher',
-                prompt_template: 'Lead Qualification & Tone-Matched Draft v2.1'
+                prompt_template: 'Lead Qualification & Tone Matched Draft v2.1'
             },
             outputs: {
                 destination: 'CRM Sync & Action Dispatches',
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
             status: 'Active (Listening)',
             badgeClass: 'badge-action',
             description: 'Dispatches an styled operational digest to Jeffrey\'s private Slack channel when a lead receives a priority score above 8.0.',
-            impact: 'Enables <5 minute response times for high-value leads by pushing mobile push notifications containing contact details, AI intent analysis, and draft responses directly to the operations leader.',
+            impact: 'Enables <5 minute response times for high value leads by pushing mobile push notifications containing contact details, AI intent analysis, and draft responses directly to the operations leader.',
             inputs: {
                 source: 'AI Sentiment & Priority Classifier',
                 channel: '#operations-leads',
@@ -124,17 +124,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 payload: {
                     slack_response_code: 200,
                     channel_notified: '#operations-leads',
-                    message_preview: '🚨 NEW HIGH-PRIORITY LEAD: Marcus Vance (VanceTech) - Priority: 9.2 - Intent: RAG Build - Draft reply prepared.'
+                    message_preview: '🚨 NEW HIGH-PRIORITY LEAD: Marcus Vance (VanceTech) Priority: 9.2 Intent: RAG Build Draft reply prepared.'
                 }
             }
         },
         'node-action-email': {
-            title: 'Auto-Email Dispatcher',
+            title: 'Auto Email Dispatcher',
             type: 'Action Node (SMTP / Twilio)',
             status: 'Active (Listening)',
             badgeClass: 'badge-action',
             description: 'Dispatches the AI-drafted reply to the lead via SMTP or Twilio SendGrid. Uses dynamic merge tags to insert personalized details.',
-            impact: 'Cuts lead response latency to 0 minutes for standard inquiries. For high-priority leads, it holds the email in a "draft queue" for up to 30 minutes, allowing Jeffrey to review and edit before sending.',
+            impact: 'Cuts lead response latency to 0 minutes for standard inquiries. For high priority leads, it holds the email in a "draft queue" for up to 30 minutes, allowing Jeffrey to review and edit before sending.',
             inputs: {
                 source: 'AI Sentiment & Priority Classifier',
                 mode: 'Delay Queue (30m review window for High Priority)',
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 payload: {
                     email_queued_id: 'em_8a73b22e',
                     recipient: 'm.vance@vancetech.com',
-                    subject: 'Re: Enterprise RAG System Inquiry - Jeffrey Ross',
+                    subject: 'Re: Enterprise RAG System Inquiry Jeffrey Ross',
                     send_scheduled_at: '2026-06-17T19:36:07Z'
                 }
             }
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             impact: 'Keeps all databases unified. Ensures zero data leakage between initial inbound contact, AI processing pipelines, Slack alerts, and eventual emails.',
             inputs: {
                 source: ['Lead Profiler & Router', 'AI Sentiment & Priority Classifier'],
-                targets: ['Self-hosted Database (PostgreSQL)', 'Hubspot API']
+                targets: ['Self hosted Database (PostgreSQL)', 'Hubspot API']
             },
             outputs: {
                 status: 'Synchronized',
@@ -197,10 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // We map output socket names/types to input sockets
     const connections = [
         { from: 'node-trigger', to: 'node-router', pathId: 'path-trigger-router', type: 'primary' },
-        { from: 'node-router', to: 'node-ai-enrich', pathId: 'path-router-enrich', type: 'high-value' },
+        { from: 'node-router', to: 'node-ai-enrich', pathId: 'path-router-enrich', type: 'high value' },
         { from: 'node-router', to: 'node-action-crm', pathId: 'path-router-crm', type: 'standard' },
         { from: 'node-ai-enrich', to: 'node-ai-sentiment', pathId: 'path-enrich-sentiment', type: 'primary' },
-        { from: 'node-ai-sentiment', to: 'node-action-slack', pathId: 'path-sentiment-slack', type: 'high-value' },
+        { from: 'node-ai-sentiment', to: 'node-action-slack', pathId: 'path-sentiment-slack', type: 'high value' },
         { from: 'node-ai-sentiment', to: 'node-action-email', pathId: 'path-sentiment-email', type: 'primary' },
         { from: 'node-ai-sentiment', to: 'node-action-crm', pathId: 'path-sentiment-crm', type: 'primary' }
     ];
@@ -238,8 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 targetSocket = targetEl.querySelector('.socket-top') || targetEl;
             } else {
                 // Horizontal layout:
-                // For router, it has multiple output sockets: high-value on top-right, standard on bottom-right
-                if (conn.type === 'high-value' && conn.from === 'node-router') {
+                // For router, it has multiple output sockets: high value on top-right, standard on bottom-right
+                if (conn.type === 'high value' && conn.from === 'node-router') {
                     sourceSocket = sourceEl.querySelector('.socket-right-top') || sourceEl;
                 } else if (conn.type === 'standard' && conn.from === 'node-router') {
                     sourceSocket = sourceEl.querySelector('.socket-right-bottom') || sourceEl;
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Path classes
             let pathClass = 'connection-path';
-            if (conn.type === 'high-value') pathClass += ' path-high-value';
+            if (conn.type === 'high value') pathClass += ' path-high value';
             if (conn.type === 'standard') pathClass += ' path-standard';
             if (isSourceActive && isTargetActive) {
                 pathClass += ' active-path pulse-flow';
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
             runSimulationBtn.classList.add('active');
         }
 
-        // List of nodes in order of high-value lead execution path
+        // List of nodes in order of high value lead execution path
         const steps = [
             'node-trigger',
             'node-router',
@@ -507,10 +507,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 9. Initial Setup & Resizing
     drawConnections();
     
-    // Select first node (Trigger) on page load so the inspector is open and user sees payload instantly!
-    setTimeout(() => {
-        selectNode('node-trigger');
-    }, 400);
+    // Select first node (Trigger) immediately on page load
+    selectNode('node-trigger');
+
 
     // Watch resize with debounce
     let resizeTimer;

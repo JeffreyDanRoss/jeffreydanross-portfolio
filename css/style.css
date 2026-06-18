@@ -1889,6 +1889,9 @@ textarea.form-input {
     flex: 1;
     min-width: 0;
     position: relative;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 .workflow-canvas {
@@ -2407,14 +2410,17 @@ textarea.form-input {
 
 @media (max-width: 768px) {
     .canvas-inner {
-        flex-direction: column;
+        display: flex;
+        flex-direction: row;
         align-items: center;
         gap: 3.5rem;
         padding: 3rem 1rem;
         min-height: auto;
+        min-width: max-content;
     }
     
     .canvas-col {
+        display: flex;
         flex-direction: column;
         gap: 3.5rem;
         width: 100%;
@@ -2436,8 +2442,8 @@ textarea.form-input {
         left: 0;
         right: 0;
         width: 100% !important;
-        height: 65vh;
-        max-height: none !important;
+        height: auto;
+        max-height: 55vh !important;
         z-index: 2000;
         border-radius: 20px 20px 0 0;
         transform: translateY(100%);
@@ -2448,6 +2454,14 @@ textarea.form-input {
         opacity: 1;
         visibility: hidden;
         transition: transform var(--transition-normal), visibility var(--transition-normal);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .node-inspector .inspector-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
     
     .node-inspector.open {
