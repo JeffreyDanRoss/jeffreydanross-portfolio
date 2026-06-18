@@ -2409,12 +2409,21 @@ textarea.form-input {
 }
 
 @media (max-width: 768px) {
+    .workflow-workspace {
+        margin-bottom: 55vh; /* Allow scrolling past the bottom sheet */
+    }
+
+    .workflow-canvas {
+        min-width: max-content; /* Force canvas to expand for horizontal scrolling */
+        min-height: auto;
+    }
+
     .canvas-inner {
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 3.5rem;
-        padding: 3rem 1rem;
+        padding: 3rem 2rem;
         min-height: auto;
         min-width: max-content;
     }
@@ -2462,6 +2471,12 @@ textarea.form-input {
         position: sticky;
         top: 0;
         z-index: 10;
+        padding: 0.75rem 1rem;
+    }
+    
+    .node-inspector .inspector-body {
+        padding: 1rem;
+        gap: 1rem;
     }
     
     .node-inspector.open {
