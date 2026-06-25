@@ -98,7 +98,7 @@
                                 
                                 <!-- STAGE 1: INGRESS (Trigger) -->
                                 <div class="canvas-col" id="col-ingress">
-                                    <div class="workflow-node" id="node-trigger" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="true">
+                                    <div class="workflow-node" id="node-trigger" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
                                         <div class="node-header">
                                             <div class="node-icon-wrapper">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -110,7 +110,7 @@
                                                 <span class="node-type-label">Webhook Trigger</span>
                                             </div>
                                         </div>
-                                        <div class="node-desc">Listens for inbound HTTP requests from contact forms and lead campaigns.</div>
+                                        <div class="node-desc">Captures inbound leads from dealership site forms, Facebook Lead Ads, or automotive marketplaces.</div>
                                         
                                         <!-- Connectors -->
                                         <span class="node-socket socket-right"></span>
@@ -118,89 +118,87 @@
                                     </div>
                                 </div>
                                 
-                                <!-- STAGE 2: ROUTING (Condition) -->
-                                <div class="canvas-col" id="col-routing">
-                                    <div class="workflow-node" id="node-router" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
+                                <!-- STAGE 2: NORMALIZATION -->
+                                <div class="canvas-col" id="col-normalization">
+                                    <div class="workflow-node" id="node-normalization" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
                                         <div class="node-header">
                                             <div class="node-icon-wrapper">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M6 3v12"/>
-                                                    <circle cx="18" cy="6" r="3"/>
-                                                    <circle cx="6" cy="18" r="3"/>
-                                                    <circle cx="18" cy="18" r="3"/>
-                                                    <path d="M6 12h9a3 3 0 0 1 3 3v3"/>
+                                                    <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                                                    <path d="M12 12v9"></path>
+                                                    <path d="m8 17 4 4 4-4"></path>
                                                 </svg>
                                             </div>
                                             <div>
-                                                <div class="node-title">Profiler &amp; Router</div>
-                                                <span class="node-type-label">Decision Rules</span>
+                                                <div class="node-title">Data Normalization</div>
+                                                <span class="node-type-label">Data Parser Node</span>
                                             </div>
                                         </div>
-                                        <div class="node-desc">Segments leads dynamically based on request type and corporate domain.</div>
+                                        <div class="node-desc">Formats the raw JSON payload, standardizes phone numbers, and extracts specific vehicle interest (e.g., Make, Model, Trim, Budget).</div>
+                                        
+                                        <!-- Connectors -->
+                                        <span class="node-socket socket-left"></span>
+                                        <span class="node-socket socket-top"></span>
+                                        <span class="node-socket socket-right"></span>
+                                        <span class="node-socket socket-bottom"></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- STAGE 3: INVENTORY LOGIC -->
+                                <div class="canvas-col" id="col-inventory">
+                                    <div class="workflow-node" id="node-inventory" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
+                                        <div class="node-header">
+                                            <div class="node-icon-wrapper">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <div class="node-title">Inventory Cross-Reference</div>
+                                                <span class="node-type-label">API Lookup Node</span>
+                                            </div>
+                                        </div>
+                                        <div class="node-desc">Queries the internal dealer management system (DMS) to check if the requested vehicle trim is currently in stock.</div>
                                         
                                         <!-- Connectors -->
                                         <span class="node-socket socket-left"></span>
                                         <span class="node-socket socket-top"></span>
                                         <span class="node-socket socket-right-top"></span>
+                                        <span class="node-socket socket-right"></span>
                                         <span class="node-socket socket-right-bottom"></span>
-                                        <span class="node-socket socket-bottom"></span>
-                                    </div>
-                                </div>
-                                
-                                <!-- STAGE 3: AI PROCESSING -->
-                                <div class="canvas-col" id="col-processing">
-                                    <!-- VeteranLM Enricher -->
-                                    <div class="workflow-node" id="node-ai-enrich" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
-                                        <div class="node-header">
-                                            <div class="node-icon-wrapper">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <rect x="4" y="4" width="16" height="16" rx="2"/>
-                                                    <path d="M9 9h6v6H9z"/>
-                                                    <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/>
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <div class="node-title">AI Context Enricher</div>
-                                                <span class="node-type-label">LLM / RAG Node</span>
-                                            </div>
-                                        </div>
-                                        <div class="node-desc">Gathers LinkedIn details, sector tags, and tech stack details of corporate inquiries.</div>
-                                        
-                                        <!-- Connectors -->
-                                        <span class="node-socket socket-left"></span>
-                                        <span class="node-socket socket-top"></span>
-                                        <span class="node-socket socket-right"></span>
-                                        <span class="node-socket socket-bottom"></span>
-                                    </div>
-                                    
-                                    <!-- Intent & Priority Classifier -->
-                                    <div class="workflow-node" id="node-ai-sentiment" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
-                                        <div class="node-header">
-                                            <div class="node-icon-wrapper">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="10"/>
-                                                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                                                    <line x1="9" y1="9" x2="9.01" y2="9"/>
-                                                    <line x1="15" y1="9" x2="15.01" y2="9"/>
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <div class="node-title">Intent &amp; Priority</div>
-                                                <span class="node-type-label">AI Classifier</span>
-                                            </div>
-                                        </div>
-                                        <div class="node-desc">Scores lead priority and sentiment; drafts custom email responder matching brand voice.</div>
-                                        
-                                        <!-- Connectors -->
-                                        <span class="node-socket socket-left"></span>
-                                        <span class="node-socket socket-top"></span>
-                                        <span class="node-socket socket-right"></span>
                                         <span class="node-socket socket-bottom"></span>
                                     </div>
                                 </div>
                                 
                                 <!-- STAGE 4: ACTIONS (CRM Sync, Slack Alert, Email Responder) -->
                                 <div class="canvas-col" id="col-actions">
+                                    <!-- CRM Sync -->
+                                    <div class="workflow-node" id="node-action-crm" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
+                                        <div class="node-header">
+                                            <div class="node-icon-wrapper">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                                                    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <div class="node-title">CRM &amp; DB Sync</div>
+                                                <span class="node-type-label">API Sync Node</span>
+                                            </div>
+                                        </div>
+                                        <div class="node-desc">Creates or updates the customer record in Salesforce/Hubspot with lead details and inventory matches.</div>
+                                        
+                                        <!-- Connectors -->
+                                        <span class="node-socket socket-left"></span>
+                                        <span class="node-socket socket-top"></span>
+                                    </div>
+                                    
                                     <!-- Slack Notification -->
                                     <div class="workflow-node" id="node-action-slack" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
                                         <div class="node-header">
@@ -211,11 +209,11 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <div class="node-title">Operations Alert</div>
+                                                <div class="node-title">Sales Floor Alert</div>
                                                 <span class="node-type-label">Slack API Node</span>
                                             </div>
                                         </div>
-                                        <div class="node-desc">Dispatches real-time Slack/SMS notifications for high-priority contracts.</div>
+                                        <div class="node-desc">Dispatches a real-time Slack/SMS notification to the sales floor if the requested vehicle is hot/in-stock.</div>
                                         
                                         <!-- Connectors -->
                                         <span class="node-socket socket-left"></span>
@@ -232,39 +230,17 @@
                                                 </svg>
                                             </div>
                                             <div>
-                                                <div class="node-title">Auto-Emailer</div>
+                                                <div class="node-title">Draft Initial Response</div>
                                                 <span class="node-type-label">SMTP Send Node</span>
                                             </div>
                                         </div>
-                                        <div class="node-desc">Sends personalized email replies instantly or queues them for manual approval.</div>
+                                        <div class="node-desc">Generates a highly contextual email response based on inventory status, queued for a salesperson's 1-click approval.</div>
                                         
                                         <!-- Connectors -->
                                         <span class="node-socket socket-left"></span>
                                         <span class="node-socket socket-top"></span>
                                         <span class="node-socket socket-right"></span>
                                         <span class="node-socket socket-bottom"></span>
-                                    </div>
-                                    
-                                    <!-- CRM Sync -->
-                                    <div class="workflow-node" id="node-action-crm" role="button" tabindex="0" aria-controls="node-inspector" aria-expanded="false">
-                                        <div class="node-header">
-                                            <div class="node-icon-wrapper">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                                                    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <div class="node-title">CRM &amp; DB Sync</div>
-                                                <span class="node-type-label">API Sync Node</span>
-                                            </div>
-                                        </div>
-                                        <div class="node-desc">Updates PostgreSQL lead records and synchronizes data with Hubspot pipelines.</div>
-                                        
-                                        <!-- Connectors -->
-                                        <span class="node-socket socket-left"></span>
-                                        <span class="node-socket socket-top"></span>
                                     </div>
                                 </div>
                                 

@@ -17,136 +17,73 @@ document.addEventListener('DOMContentLoaded', () => {
             inputs: {
                 source: 'HTTPS POST Request (JSON)',
                 auth: 'API Token / HMAC Signature',
-                data: ['name', 'email', 'phone', 'message', 'timestamp']
+                data: ['name', 'email', 'phone', 'message', 'vehicle_interest']
             },
             outputs: {
-                destination: 'Data Router',
+                destination: 'Data Normalization',
                 payload: {
                     lead_id: 'ld_98a7c2e1',
                     raw_data: {
                         name: 'Marcus Vance',
                         email: 'm.vance@vancetech.com',
                         phone: '+1 (555) 902 3142',
-                        message: 'Looking to build an enterprise RAG system to parse our internal PDFs. Budget is $15k.',
+                        message: 'Looking for a 2026 SUV with third-row seating. Budget is $55k, trading in a 2019 Sedan.',
                         submitted_at: '2026-06-17T19:06:07Z'
                     }
                 }
             }
         },
-        'node-router': {
-            title: 'Lead Profiler & Router',
-            type: 'Decision Router',
-            status: 'Active (Routing)',
+        'node-normalization': {
+            title: 'Data Normalization',
+            type: 'Data Parser Node',
+            status: 'Active (Parsing)',
             badgeClass: 'badge-router',
-            description: 'Parses lead fields and routes requests based on predefined criteria. It evaluates email domains (e.g., corporate vs public), checks query keywords, and segments leads into appropriate pipelines.',
-            impact: 'Eliminates administrative sorting. Corporate domains or budget oriented inquiries are routed to AI enrichment; standard info requests or direct sales sync straight to CRM.',
+            description: 'Formats the raw JSON payload, standardizes phone numbers to E.164 format, and extracts specific vehicle interest using regular expressions and logic.',
+            impact: 'Ensures data cleanliness across all down-stream systems. Structured data allows for accurate inventory matching and prevents CRM duplicates.',
             inputs: {
                 source: 'Lead Ingestion Trigger',
-                parameters: ['domain_type', 'message_content', 'budget_estimate']
+                parameters: ['phone_formatter', 'keyword_extraction', 'budget_parser']
             },
             outputs: {
-                routes: {
-                    high_value_path: 'AI Context Enricher (Condition: Corporate/Budget > $5k)',
-                    standard_path: 'CRM Direct Sync (Condition: Public Domain/Low Budget)'
-                },
+                destination: 'Inventory Cross-Reference',
                 payload: {
-                    route_selected: 'high_value_path',
-                    route_criteria: {
-                        is_corporate: true,
-                        detected_keywords: ['enterprise', 'RAG', 'budget'],
-                        has_valid_email: true
+                    normalized_data: {
+                        formatted_phone: '+15559023142',
+                        extracted_vehicle: {
+                            year: 2026,
+                            body_style: 'SUV',
+                            must_have: ['third-row seating']
+                        },
+                        budget_estimate: 55000,
+                        trade_in_indicated: true
                     }
                 }
             }
         },
-        'node-ai-enrich': {
-            title: 'VeteranLM Context Enricher',
-            type: 'AI Processing (LLM / RAG)',
+        'node-inventory': {
+            title: 'Inventory Cross-Reference',
+            type: 'API Lookup Node',
             status: 'Active (Idle)',
             badgeClass: 'badge-ai',
-            description: 'Enriches lead metadata using search tools, corporate directory APIs, and semantic indexes. Gathers details about VanceTech, their industry sector, and existing tech stacks.',
-            impact: 'Provides the sales pipeline with complete corporate intelligence automatically, saving hours of manual LinkedIn and Google search research prior to initial contact.',
+            description: 'Queries the internal dealer management system (DMS) via API to check if a vehicle matching the extracted criteria is currently in stock or in transit.',
+            impact: 'Eliminates manual lot checks by salespeople. Instantly routes "hot" leads with matching inventory to the floor for immediate contact.',
             inputs: {
-                source: 'Lead Profiler & Router',
-                apis: ['LinkedIn Finder', 'Clearbit / Hunter API', 'Internal Vector DB']
-            },
-            outputs: {
-                destination: 'AI Sentiment & Priority Classifier',
-                payload: {
-                    enriched_data: {
-                        company_name: 'Vance Technologies Inc.',
-                        industry: 'Cloud Infrastructure & Enterprise Security',
-                        company_size: '50 to 200 employees',
-                        tech_stack: ['AWS', 'Kubernetes', 'Python', 'PostgreSQL'],
-                        estimated_revenue: '$8.5M'
-                    }
-                }
-            }
-        },
-        'node-ai-sentiment': {
-            title: 'Intent & Priority Classifier',
-            type: 'AI Processing (LLM Evaluation)',
-            status: 'Active (Idle)',
-            badgeClass: 'badge-ai',
-            description: 'Leverages small, fast LLMs to classify the message\'s intent, urgency level, and sentiment score. It drafts an initial personalized response matching Jeffrey\'s professional tone.',
-            impact: 'Ensures immediate qualification. Scores urgency so high priority corporate contracts trigger real time operational SMS/Slack alerts for immediate human in the loop engagement.',
-            inputs: {
-                source: 'VeteranLM Context Enricher',
-                prompt_template: 'Lead Qualification & Tone Matched Draft v2.1'
+                source: 'Data Normalization',
+                apis: ['vAuto / DMS Inventory API', 'Pricing Engine']
             },
             outputs: {
                 destination: 'CRM Sync & Action Dispatches',
                 payload: {
-                    classification: {
-                        intent: 'Service Inquiry / System Build',
-                        urgency: 'HIGH',
-                        sentiment_score: 0.85,
-                        priority_score: 9.2
-                    },
-                    draft_reply: 'Hi Marcus, thank you for reaching out. Parsing internal PDFs using a localized RAG system is a great way to unlock siloed organizational knowledge... Let\'s schedule a brief call next Tuesday...'
-                }
-            }
-        },
-        'node-action-slack': {
-            title: 'Slack Operations Dispatch',
-            type: 'Action Node (Slack Webhook)',
-            status: 'Active (Listening)',
-            badgeClass: 'badge-action',
-            description: 'Dispatches an styled operational digest to Jeffrey\'s private Slack channel when a lead receives a priority score above 8.0.',
-            impact: 'Enables <5 minute response times for high value leads by pushing mobile push notifications containing contact details, AI intent analysis, and draft responses directly to the operations leader.',
-            inputs: {
-                source: 'AI Sentiment & Priority Classifier',
-                channel: '#operations-leads',
-                priority_threshold: 8.0
-            },
-            outputs: {
-                status: 'Delivered',
-                payload: {
-                    slack_response_code: 200,
-                    channel_notified: '#operations-leads',
-                    message_preview: '🚨 NEW HIGH-PRIORITY LEAD: Marcus Vance (VanceTech) Priority: 9.2 Intent: RAG Build Draft reply prepared.'
-                }
-            }
-        },
-        'node-action-email': {
-            title: 'Auto Email Dispatcher',
-            type: 'Action Node (SMTP / Twilio)',
-            status: 'Active (Listening)',
-            badgeClass: 'badge-action',
-            description: 'Dispatches the AI-drafted reply to the lead via SMTP or Twilio SendGrid. Uses dynamic merge tags to insert personalized details.',
-            impact: 'Cuts lead response latency to 0 minutes for standard inquiries. For high priority leads, it holds the email in a "draft queue" for up to 30 minutes, allowing Jeffrey to review and edit before sending.',
-            inputs: {
-                source: 'AI Sentiment & Priority Classifier',
-                mode: 'Delay Queue (30m review window for High Priority)',
-                sender: 'jeffrey@jeffreydanross.com'
-            },
-            outputs: {
-                status: 'Queued (Awaiting Approval / Review)',
-                payload: {
-                    email_queued_id: 'em_8a73b22e',
-                    recipient: 'm.vance@vancetech.com',
-                    subject: 'Re: Enterprise RAG System Inquiry Jeffrey Ross',
-                    send_scheduled_at: '2026-06-17T19:36:07Z'
+                    inventory_match: {
+                        status: 'MATCH_FOUND',
+                        matches_count: 2,
+                        top_match: {
+                            stock_number: 'SUV-2604',
+                            year_make_model: '2026 Ford Explorer Limited',
+                            price: 52400,
+                            location: 'Main Lot - Row C'
+                        }
+                    }
                 }
             }
         },
@@ -155,22 +92,65 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Action Node (API Sync)',
             status: 'Active (Listening)',
             badgeClass: 'badge-action',
-            description: 'Synchronizes all collected information, AI classification scores, and logs to the lead database (CRM, self-hosted Postgres, or Hubspot).',
-            impact: 'Keeps all databases unified. Ensures zero data leakage between initial inbound contact, AI processing pipelines, Slack alerts, and eventual emails.',
+            description: 'Creates or updates the customer record in the dealership CRM (e.g., Salesforce/Hubspot/VinSolutions) with lead details and inventory matches.',
+            impact: 'Keeps all sales databases unified. Ensures zero data leakage between initial inbound contact, floor alerts, and marketing pipelines.',
             inputs: {
-                source: ['Lead Profiler & Router', 'AI Sentiment & Priority Classifier'],
-                targets: ['Self hosted Database (PostgreSQL)', 'Hubspot API']
+                source: 'Inventory Cross-Reference',
+                targets: ['VinSolutions CRM', 'PostgreSQL Data Warehouse']
             },
             outputs: {
                 status: 'Synchronized',
                 payload: {
                     db_insert_status: 'SUCCESS',
-                    hubspot_sync_status: 'CREATED',
+                    crm_sync_status: 'CREATED',
                     records_updated: {
                         contact_id: 'ct_12093',
-                        deal_id: 'dl_40211',
-                        pipeline_stage: 'Qualified Lead'
+                        opportunity_id: 'opp_40211',
+                        pipeline_stage: 'Inventory Matched'
                     }
+                }
+            }
+        },
+        'node-action-slack': {
+            title: 'Sales Floor Alert',
+            type: 'Action Node (Slack Webhook)',
+            status: 'Active (Listening)',
+            badgeClass: 'badge-action',
+            description: 'Dispatches a real-time Slack/SMS notification to the sales floor if the requested vehicle is currently in-stock (Hot Lead).',
+            impact: 'Enables <5 minute response times for high-intent buyers by pushing mobile notifications containing vehicle exact location and lead contact info directly to the sales team.',
+            inputs: {
+                source: 'Inventory Cross-Reference',
+                channel: '#hot-leads-floor',
+                condition: 'MATCH_FOUND === true'
+            },
+            outputs: {
+                status: 'Delivered',
+                payload: {
+                    slack_response_code: 200,
+                    channel_notified: '#hot-leads-floor',
+                    message_preview: '🚨 HOT LEAD: Marcus Vance looking for 2026 SUV. MATCH FOUND: Stock #SUV-2604 ($52k). Trade-in indicated!'
+                }
+            }
+        },
+        'node-action-email': {
+            title: 'Draft Initial Response',
+            type: 'Action Node (SMTP / Twilio)',
+            status: 'Active (Listening)',
+            badgeClass: 'badge-action',
+            description: 'Generates a highly contextual email response based on inventory status, queued for a salesperson\'s 1-click approval.',
+            impact: 'Cuts lead response latency while maintaining a human touch. Sales reps don\'t need to write emails from scratch; they simply review the draft containing exact stock matches.',
+            inputs: {
+                source: 'Inventory Cross-Reference',
+                mode: 'Delay Queue (Awaiting Sales Rep Approval)',
+                sender: 'sales@dealership.com'
+            },
+            outputs: {
+                status: 'Queued (Awaiting Approval)',
+                payload: {
+                    email_queued_id: 'em_8a73b22e',
+                    recipient: 'm.vance@vancetech.com',
+                    subject: 'Re: Your inquiry on a 2026 SUV',
+                    draft_content: 'Hi Marcus, thanks for reaching out. We actually have 2 SUVs in stock that match your criteria, including a 2026 Explorer Limited with 3rd-row seating for $52,400...'
                 }
             }
         }
@@ -196,13 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Define Connections Map
     // We map output socket names/types to input sockets
     const connections = [
-        { from: 'node-trigger', to: 'node-router', pathId: 'path-trigger-router', type: 'primary' },
-        { from: 'node-router', to: 'node-ai-enrich', pathId: 'path-router-enrich', type: 'high value' },
-        { from: 'node-router', to: 'node-action-crm', pathId: 'path-router-crm', type: 'standard' },
-        { from: 'node-ai-enrich', to: 'node-ai-sentiment', pathId: 'path-enrich-sentiment', type: 'primary' },
-        { from: 'node-ai-sentiment', to: 'node-action-slack', pathId: 'path-sentiment-slack', type: 'high value' },
-        { from: 'node-ai-sentiment', to: 'node-action-email', pathId: 'path-sentiment-email', type: 'primary' },
-        { from: 'node-ai-sentiment', to: 'node-action-crm', pathId: 'path-sentiment-crm', type: 'primary' }
+        { from: 'node-trigger', to: 'node-normalization', pathId: 'path-trigger-norm', type: 'primary' },
+        { from: 'node-normalization', to: 'node-inventory', pathId: 'path-norm-inv', type: 'primary' },
+        { from: 'node-inventory', to: 'node-action-crm', pathId: 'path-inv-crm', type: 'standard' },
+        { from: 'node-inventory', to: 'node-action-slack', pathId: 'path-inv-slack', type: 'high value' },
+        { from: 'node-inventory', to: 'node-action-email', pathId: 'path-inv-email', type: 'primary' }
     ];
 
     // 4. Draw dynamic connection lines
@@ -409,7 +387,11 @@ document.addEventListener('DOMContentLoaded', () => {
     nodes.forEach(node => {
         const handleNodeSelect = (e) => {
             e.stopPropagation();
-            selectNode(node.id);
+            if (node.classList.contains('active')) {
+                closeInspector();
+            } else {
+                selectNode(node.id);
+            }
         };
 
         node.addEventListener('click', handleNodeSelect);
@@ -445,10 +427,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // List of nodes in order of high value lead execution path
         const steps = [
             'node-trigger',
-            'node-router',
-            'node-ai-enrich',
-            'node-ai-sentiment',
-            ['node-action-slack', 'node-action-email', 'node-action-crm']
+            'node-normalization',
+            'node-inventory',
+            ['node-action-crm', 'node-action-slack', 'node-action-email']
         ];
 
         // Clear active classes from nodes first
@@ -507,8 +488,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 9. Initial Setup & Resizing
     drawConnections();
     
-    // Select first node (Trigger) immediately on page load
-    selectNode('node-trigger');
+    // Initially no node is selected, inspector remains hidden
+    // selectNode('node-trigger');
 
 
     // Watch resize with debounce
